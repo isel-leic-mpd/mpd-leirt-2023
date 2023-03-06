@@ -15,3 +15,13 @@ gradle-app.setting
 
 # Ignore Gradle build output directory
 build
+
+# Ignore InteliJ metadata
+.idea
+*.iml
+
+# Ignore InteliJ build folder
+out/
+
+#ignore api key in resources
+**/resources/*key.txt
