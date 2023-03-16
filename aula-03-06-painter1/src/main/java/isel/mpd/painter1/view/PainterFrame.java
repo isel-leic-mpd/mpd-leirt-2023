@@ -15,6 +15,7 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Map;
 
 public class PainterFrame extends JFrame {
     public static int CANVAS_SIZE_X = 1024;
@@ -43,10 +44,22 @@ public class PainterFrame extends JFrame {
     // interactive shape build state acessors
     public Point getStart() { return start; }
     public Point getCurr() { return curr; }
+    public Color getColor() { return currColor; }
 
-    // nou used anymore
+    // not used anymore
     public String getBuildShapeName() {
         return currShapeName;
+    }
+
+    private Map<String, ConfigDrawer> drawersMap =
+        Map.ofEntries(
+            Map.entry(SHAPE_CMD_RECT, new RectDrawer(this)),
+            Map.entry(SHAPE_CMD_TRIANGLE, new TriangleDrawer(this))
+        );
+
+    public  ConfigDrawer createConfigDrawer(String name) {
+        //if (name.equals(SHAPE_CMD_RECT)) return new RectDrawer(this);
+        return drawersMap.get(name);
     }
 
     public  PainterFrame(App app){
@@ -74,6 +87,7 @@ public class PainterFrame extends JFrame {
 
         public void mouseReleased(MouseEvent me) {
             // TODO
+            currDrawer.process(canvas);
             canvas.resetBuildMode();
         }
     }
@@ -103,37 +117,53 @@ public class PainterFrame extends JFrame {
         return item;
     }
 
+    private void addItem(String name, JMenu menu) {
+        var item = new JMenuItem(name);
+        item.addActionListener(evt -> {
+            currDrawer = createConfigDrawer(name);
+        });
+        menu.add(item);
+    }
+
     private void buildMenu() {
         JMenuBar menuBar = new JMenuBar();
         JMenu creationSel = new JMenu("Add Shape");
 
+        addItem(SHAPE_CMD_RECT, creationSel);
+
+        /*
         creationSel.add(buildItem(SHAPE_CMD_RECT,
             evt -> {
                 mouseHistory.append("add rectangle\n");
                 currDrawer = new RectDrawer(this);
 
             }));
+         */
         creationSel.add(buildItem(SHAPE_CMD_TRIANGLE,
             evt -> {
                 mouseHistory.append("add triangle\n");
+                // obsolete, change to config drawer
                 currShapeName = SHAPE_CMD_TRIANGLE;
 
             }));
         creationSel.add(buildItem(SHAPE_CMD_OVAL,
             evt -> {
                 mouseHistory.append("add oval\n");
+                // obsolete, change to config drawer
                 currShapeName = SHAPE_CMD_OVAL;
 
             }));
         creationSel.add(buildItem(SHAPE_CMD_LINE,
             evt -> {
                 mouseHistory.append("add line\n");
+                // obsolete, change to config drawer
                 currShapeName = SHAPE_CMD_LINE;
 
             }));
         creationSel.add(buildItem(SHAPE_CMD_CIRCLE,
             evt -> {
                 mouseHistory.append("add oval\n");
+                // obsolete, change to config drawer
                 currShapeName = SHAPE_CMD_CIRCLE;
             }));
 
