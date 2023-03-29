@@ -5,7 +5,7 @@ skinparam classAttributeIconSize 0
 class Creator {
     +genericOper1()
     +genericOper2()
-    #createProduct()
+    createProduct()
 }
 
 interface Product {
@@ -24,11 +24,11 @@ Product <|.. ConcreteProductB
 
 Creator .> Product
 class ConcreteCreatorA {
- #createProduct()
+   createProduct()
 }
 
 class ConcreteCreatorB {
- #createProduct()
+   createProduct()
 }
 
 Creator <|-- ConcreteCreatorA

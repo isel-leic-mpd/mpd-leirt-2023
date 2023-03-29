@@ -25,16 +25,19 @@ public class Rect implements IShape  {
 
     @Override
     public boolean intersects(IShape other) {
+
         return getBounds().intersects(other.getBounds());
     }
 
     @Override
     public boolean contains(Point p) {
+
         return getBounds().contains(p);
     }
 
     @Override
     public boolean contains(IShape other) {
+
         return getBounds().contains(other.getBounds());
     }
 

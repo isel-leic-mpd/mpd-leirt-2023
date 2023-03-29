@@ -15,6 +15,7 @@ public class RectConfig implements ConfigDrawer {
 
     @Override
     public IShape createShape() {
+
         return new Rect(ctx.getRef(), ctx.getWidth(), ctx.getHeight(), ctx.getColor());
     }
 
