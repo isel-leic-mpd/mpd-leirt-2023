@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<object type="isel.mpd.reflection.data.MyPoint"><x type="int" declaredAt="isel.mpd.reflection.data.MyPoint">5</x><y type="int" declaredAt="isel.mpd.reflection.data.MyPoint">10</y><name type="java.lang.String" declaredAt="isel.mpd.reflection.data.MyPoint" isNull="true"/></object>

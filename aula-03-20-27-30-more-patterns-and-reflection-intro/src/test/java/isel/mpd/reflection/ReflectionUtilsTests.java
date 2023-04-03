@@ -29,7 +29,7 @@ public class ReflectionUtilsTests {
         assertTrue(instanceOf(c2, I1.class));
         assertTrue(instanceOf(c2, I2.class));
 
-      
+
 
     }
 

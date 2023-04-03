@@ -2,7 +2,9 @@ package isel.mpd.reflection;
 
 import isel.mpd.reflection.data.MyPoint;
 
+import java.io.*;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -92,4 +94,37 @@ public class ReflectionUtils {
     }
 
 
+    public static List<Field> getFields(Class<?> cls) {
+        List<Field> fields = new ArrayList<>();
+
+        while(cls != Object.class) {
+           Field[] lf = cls.getDeclaredFields();
+           fields.addAll(Arrays.asList(lf));
+           cls = cls.getSuperclass();
+        }
+        return fields;
+    }
+
+    public static void saveObjectToFile(Object o, String fileName) {
+        try(ObjectOutputStream os =
+            new ObjectOutputStream(new FileOutputStream(fileName))) {
+            os.writeObject(o);
+        }
+        catch(IOException e) {
+            throw new UncheckedIOException(e);
+        }
+    }
+
+    public static <T> T getObjectFromFile(String fileName) {
+        try(ObjectInputStream is =
+            new ObjectInputStream(new FileInputStream(fileName))) {
+            return (T) is.readObject();
+        }
+        catch(IOException e) {
+            throw new UncheckedIOException(e);
+        }
+        catch(ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
