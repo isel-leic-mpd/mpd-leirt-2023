@@ -13,26 +13,14 @@ public class Queries0 {
     public static Iterable<WeatherInfo> get_sunny_locals(
         List<WeatherInfo> wiSeq) {
 
-        List<WeatherInfo> result = new ArrayList<>();
-
-        for(var wi : wiSeq) {
-            if (wi.description().contains("sky"))
-                result.add(wi);
-        }
-        return result;
+        // TODO
+        return null;
     }
 
     public static Iterable<WeatherInfo> get_rainy_locals(
         List<WeatherInfo> wiSeq) {
-
-
-        List<WeatherInfo> result = new ArrayList<>();
-
-        for(var wi : wiSeq) {
-            if (wi.description().contains("rain"))
-                result.add(wi);
-        }
-        return result;
+        // TODO
+        return null;
     }
 
     public static Iterable<WeatherInfo> getLisbonWeatherFromList(Iterable<WeatherInfo> seq) {
@@ -43,11 +31,7 @@ public class Queries0 {
     public Iterable<Double> getTemperaturesInInterval(
                     Iterable<WeatherInfo> seq, double min, double max) {
         List<Double> temps = new ArrayList<>();
-
-        for(var wi : seq) {
-            if (wi.temp() >= min && wi.temp() <= max)
-                temps.add(wi.temp());
-        }
+        // TODO
         return temps;
     }
 
