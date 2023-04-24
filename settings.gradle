@@ -14,4 +14,5 @@ include('aula-03-13-16-painter-mvc')
 include 'aula-03-20-27-30-more-patterns-and-reflection-intro'
 include 'aula-04-13'
 include 'aula-04-17'
+include 'aula-04-20-lazy-queries'
 
