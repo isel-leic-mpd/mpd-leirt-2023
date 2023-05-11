@@ -15,4 +15,6 @@ include 'aula-03-20-27-30-more-patterns-and-reflection-intro'
 include 'aula-04-13'
 include 'aula-04-17'
 include 'aula-04-20-24-lazy-queries'
+include 'aula-05-08-11-open-weather-service'
+include 'aula-05-04-streamIterable' 
 
