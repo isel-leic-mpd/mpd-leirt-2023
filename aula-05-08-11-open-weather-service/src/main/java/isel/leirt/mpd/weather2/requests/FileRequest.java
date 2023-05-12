@@ -15,7 +15,7 @@ public class FileRequest implements Request{
 		URL url = FileRequest.class.getClassLoader().getResource(CACHE_NAME);
 		try {
 			File file = new File(url.toURI());
-			return file.getAbsolutePath() + "/";
+			return file.getAbsolutePath() + "\\";
 		}
 		catch(URISyntaxException e) {
 			throw new RuntimeException(e);
@@ -33,7 +33,7 @@ public class FileRequest implements Request{
 	public Reader get(String path) {
 		path =  convert(path);
 		try {
-			return new InputStreamReader(ClassLoader.getSystemResource(path).openStream());
+			return new InputStreamReader(ClassLoader.getSystemResource(CACHE_NAME + "/" + path).openStream());
 		}
 		catch(IOException e) {
 			throw new UncheckedIOException(e);
@@ -42,7 +42,8 @@ public class FileRequest implements Request{
 
 	public static void saveOn(String fileName, Reader reader) {
 		fileName =  convert(fileName);
-		try (PrintWriter writer = new PrintWriter(CACHE_PATH + fileName)) {
+		String absPath = CACHE_PATH + fileName;
+		try (PrintWriter writer = new PrintWriter(absPath)) {
 			reader.transferTo(writer);
 		}
 		catch (IOException e){

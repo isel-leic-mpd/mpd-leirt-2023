@@ -18,14 +18,30 @@ public class WeatherServiceTests {
 	@Test
 	public void get_locations_named_lisbon() {
 		Request httpReq = new HttpRequest();
+		int[] count = { 0 };
+
+		Request counterReq = path -> {
+			count[0]++;
+
+			return httpReq.get(path);
+		};
+
 
 		OpenWeatherService service =
 			new OpenWeatherService(
-				new OpenWeatherWebApi()
+				new OpenWeatherWebApi(counterReq)
 			);
 
+		assertEquals(0, count[0]);
 		StreamIterable<Location> locations =
-			service.search("Lisbon");
+			service.search("Lisboa");
+
+		assertEquals(0, count[0]);
+		for(var loc : locations) {
+			System.out.println(loc);
+		}
+
+		assertEquals(1, count[0]);
 	}
 
 

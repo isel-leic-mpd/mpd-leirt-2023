@@ -12,6 +12,7 @@ import java.time.LocalDate;
 import isel.mpd.queries.lazy2.StreamIterable;
 
 import static isel.mpd.queries.lazy2.StreamIterable.from;
+import static isel.mpd.queries.lazy2.StreamIterable.range;
 
 
 public class OpenWeatherService {
@@ -22,13 +23,32 @@ public class OpenWeatherService {
 	}
 
 
+	/**
+	 * Sa~apresentadas duas formas de garantir que
+	 * o acesso à api apenas acontece quando for
+	 * consumido o Iterable retornado
+	 *
+	 * @param placeName
+	 * @return
+	 */
 	public StreamIterable<Location> search(String placeName) {
-		return  from(api.search(placeName))
-					//.map(dto -> dtoToLocation(dto));
+
+		return   range(1,1)
+				 .flatMap( n -> api.search(placeName))
+				 .map(this::dtoToLocation);
+
+
+		/*
+		return  from( () -> api.search(placeName).iterator())
 					.map(this::dtoToLocation);
+
+		*/
 
 	}
 
+
+	// corrigam e completem os dois métodso abaixo
+	// para terem a mesma semântica lazy do método anterior
 
 	private StreamIterable<DayInfo> forecastAt(Location loc) {
 		return
@@ -49,13 +69,13 @@ public class OpenWeatherService {
 	}
 
 	private  Location dtoToLocation(LocationDto dto) {
-		var loc =  new Location(dto.getName(),
+		return  new Location(dto.getName(),
 			dto.getCountry(),
 			dto.getLat(),
-			dto.getLon()
+			dto.getLon(),
+			l -> forecastAt(l)
 		);
-		loc.setForecast(() -> forecastAt(loc));
-		return loc;
+
 	}
 
 	private  WeatherInfo dtoToWeatherInfo(ForecastHourlyDto dto) {
@@ -67,6 +87,9 @@ public class OpenWeatherService {
 			dto.feelsLike());
 	}
 
+	// utilizem neste método a mesma técnica usada no Location
+	// para que a obtenção das abservações de temperatura do dia só ocorra
+	// quando for chamado o método temperatures de DayInfo
 	public DayInfo dtoToDayInfo(ForecastInfoDto dto, Location loc) {
 		return new DayInfo(
 			dto.obsDate(),

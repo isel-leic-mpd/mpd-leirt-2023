@@ -2,6 +2,7 @@ package isel.leirt.mpd.weather2.model;
 
 import isel.mpd.queries.lazy2.StreamIterable;
 
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class Location {
@@ -11,17 +12,20 @@ public class Location {
 	private double latitude;
 	private double longitude;
 
-	Supplier<StreamIterable<DayInfo>> forecast;
+	Function<Location, StreamIterable<DayInfo>> forecast;
 
 	public Location(String name,
 	                String country,
 	                double latitude,
-	                double longitude) {
+	                double longitude,
+					Function<Location, StreamIterable<DayInfo>> forecast
+					) {
 		this.name = name;
 		this.country = country;
 
 		this.latitude = latitude;
 		this.longitude = longitude;
+		this.forecast = forecast;
 	}
 
 	// acessors
@@ -30,12 +34,8 @@ public class Location {
 	public double getLatitude()     { return latitude; }
 	public double getLongitude()    { return longitude; }
 
-	public void setForecast(Supplier<StreamIterable<DayInfo>> forecast) {
-		this.forecast = forecast;
-	}
-
 	public StreamIterable<DayInfo> forecast()  {
-		return forecast.get();
+		return forecast.apply(this);
 	}
 
 	@Override

@@ -7,6 +7,7 @@ import isel.leirt.mpd.weather2.utils.TimeUtils;
 import java.time.LocalDateTime;
 
 public class WeatherInfoDto {
+
     public static class Weather {
         public  double temp;
         public  double feels_like;
@@ -62,5 +63,10 @@ public class WeatherInfoDto {
     public String description() { return descriptors[0].description; }
 
     public int descriptionId() { return descriptors[0].id; }
+
+    @Override
+    public String toString() {
+        return weather.toString();
+    }
 
 }

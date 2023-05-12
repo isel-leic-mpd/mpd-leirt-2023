@@ -6,6 +6,8 @@ import com.google.gson.Gson;
 import isel.leirt.mpd.weather2.dto.*;
 import isel.leirt.mpd.weather2.exceptions.WeatherApiException;
 import isel.leirt.mpd.weather2.requests.FileRequest;
+import isel.leirt.mpd.weather2.requests.HttpRequest;
+import isel.leirt.mpd.weather2.requests.Request;
 import isel.leirt.mpd.weather2.utils.TimeUtils;
 
 
@@ -53,6 +55,7 @@ public class OpenWeatherWebApi {
         WEATHER_HOST
             + GEO_SERVICE + "direct?q=%s&limit=10&lang=pt&appid=" + API_KEY;
 
+    Request req;
     protected final Gson gson;
 
     /**
@@ -85,14 +88,19 @@ public class OpenWeatherWebApi {
     public WeatherInfoDto weatherAt(double lat, double lon) {
         String path = String.format(WEATHER_AT_TEMPLATE, lat, lon);
 
-        try (Reader reader = new InputStreamReader(new URL(path).openStream())) {
-            WeatherInfoDto winfo =
-                    gson.fromJson(reader, WeatherInfoDto.class);
-            return winfo;
-        }
-        catch(IOException e) {
-            throw new UncheckedIOException(e);
-        }
+        Reader reader = req.get(path);
+        WeatherInfoDto winfo =
+            gson.fromJson(reader, WeatherInfoDto.class);
+        System.out.println("class is " + winfo.getClass().getName() +
+                            "winfo = " + winfo.toString());
+        return winfo;
+    }
+
+    public void saveWeatherAt(double lat, double lon) {
+        String path = String.format(WEATHER_AT_TEMPLATE, lat, lon);
+        Reader reader = req.get(path);
+
+        FileRequest.saveOn(path, reader);
     }
 
     /**
@@ -104,28 +112,16 @@ public class OpenWeatherWebApi {
     public PollutionInfoDto airPollutionAt(double lat, double lon) {
         String path = String.format(AIR_POLLUTION_AT_TEMPLATE, lat, lon);
 
-        try(Reader reader = new InputStreamReader(new URL(path).openStream())) {
-            PollutionInfoQueryDto pi =
-                gson.fromJson(reader, PollutionInfoQueryDto.class);
-            if (pi.list == null || pi.list.length != 1)
-                throw new WeatherApiException("response list must have one element");
-            return pi.list[0];
-        }
-        catch(IOException e) {
-            throw new UncheckedIOException(e);
-        }
-
+        PollutionInfoQueryDto pi =
+            gson.fromJson(req.get(path), PollutionInfoQueryDto.class);
+        if (pi.list == null || pi.list.length != 1)
+            throw new WeatherApiException("response list must have one element");
+        return pi.list[0];
     }
 
     public void saveAirPollutionAt(double lat, double lon) {
         String path = String.format(AIR_POLLUTION_AT_TEMPLATE, lat, lon);
-
-        try(Reader reader = new InputStreamReader(new URL(path).openStream())) {
-            FileRequest.saveOn(path, reader);
-        }
-        catch(IOException e) {
-            throw new UncheckedIOException(e);
-        }
+        FileRequest.saveOn(path, req.get(path));
     }
 
     /**
@@ -136,15 +132,9 @@ public class OpenWeatherWebApi {
      */
     public List<ForecastInfoDto> forecastWeatherAt0(double lat, double lon) {
         String path =  String.format(FORECAST_WEATHER_TEMPLATE, lat, lon);
-
-        try (Reader reader = new InputStreamReader(new URL(path).openStream())) {
-            ForecastWeatherInfoQueryDto finfo =
-                    gson.fromJson(reader, ForecastWeatherInfoQueryDto.class);
-            return Arrays.asList(finfo.getForecastInfo());
-        }
-        catch(IOException e) {
-            throw new UncheckedIOException(e);
-        }
+        ForecastWeatherInfoQueryDto finfo =
+                gson.fromJson(req.get(path), ForecastWeatherInfoQueryDto.class);
+        return Arrays.asList(finfo.getForecastInfo());
     }
 
     /**
@@ -156,29 +146,22 @@ public class OpenWeatherWebApi {
     public List<ForecastInfoDto> forecastWeatherAt(double lat, double lon) {
         String path = String.format(FORECAST_WEATHER_TEMPLATE, lat, lon);
 
-        try (Reader reader = new InputStreamReader(new URL(path).openStream())) {
-            ForecastWeatherInfoQueryDto finfo =
-                gson.fromJson(reader, ForecastWeatherInfoQueryDto.class);
-            return Arrays.asList(finfo.getForecastInfo());
-        }
-        catch(IOException e) {
-            throw new UncheckedIOException(e);
-        }
-    }
+        Reader reader = req.get(path);
 
+        ForecastWeatherInfoQueryDto finfo =
+            gson.fromJson(reader, ForecastWeatherInfoQueryDto.class);
+        return Arrays.asList(finfo.getForecastInfo());
+
+    }
 
     public List<ForecastHourlyDto> forecastDetailAt(double lat, double lon) {
         String path =  String.format(FORECAST_HOURLY_TEMPLATE, lat, lon);
-        try (Reader reader = new InputStreamReader(new URL(path).openStream())) {
-            ForecastWeatherInfoQueryDto winfo =
-                gson.fromJson(reader, ForecastWeatherInfoQueryDto.class);
-            return Arrays.asList(winfo.getHourlyInfo());
-        }
-        catch(IOException e) {
-            throw new UncheckedIOException(e);
-        }
-    }
 
+        ForecastWeatherInfoQueryDto winfo =
+            gson.fromJson(req.get(path), ForecastWeatherInfoQueryDto.class);
+        return Arrays.asList(winfo.getHourlyInfo());
+
+    }
 
     /**
      * Get local info given the name of the local
@@ -187,14 +170,8 @@ public class OpenWeatherWebApi {
      */
     public List<LocationDto> search(String location) {
         String path =  String.format(LOCATION_SEARCH_TEMPLATE, location);
-
-        try(Reader reader = new InputStreamReader(new URL(path).openStream())) {
-                LocationDto[] search = gson.fromJson(reader, LocationDto[].class);
-                return Arrays.asList(search);
-        }
-        catch(IOException e) {
-            throw new UncheckedIOException(e);
-        }
+        LocationDto[] search = gson.fromJson(req.get(path), LocationDto[].class);
+        return Arrays.asList(search);
     }
 
     public List<PollutionInfoDto> pollutionHistoryAt(
@@ -203,20 +180,23 @@ public class OpenWeatherWebApi {
         String path = String.format(AIR_POLLUTION_HISTORY_TEMPLATE,
                             lati, longi, TimeUtils.toUnixTime(start), TimeUtils.toUnixTime(end));
 
-        try (Reader reader = new InputStreamReader(new URL(path).openStream())) {
-            PollutionInfoQueryDto winfo =
-                    gson.fromJson(reader, PollutionInfoQueryDto.class);
-            return Arrays.asList(winfo.list);
-        }
-        catch(IOException e) {
-            throw new UncheckedIOException(e);
-        }
+        PollutionInfoQueryDto winfo =
+                gson.fromJson(req.get(path), PollutionInfoQueryDto.class);
+        return Arrays.asList(winfo.list);
+
     }
 
     // the instance created receive the data source used to
     // get the weather resources
-    public OpenWeatherWebApi() {
+    public OpenWeatherWebApi(Request req) {
         gson = new Gson();
+        this.req = req;
     }
+
+    public OpenWeatherWebApi( ) {
+        gson = new Gson();
+        this.req = new HttpRequest();
+    }
+
 
 }

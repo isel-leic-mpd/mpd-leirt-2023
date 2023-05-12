@@ -1,6 +1,7 @@
 package isel.leirt.mpd.weather2;
 
 import isel.leirt.mpd.weather2.dto.*;
+import isel.leirt.mpd.weather2.requests.FileRequest;
 import isel.leirt.mpd.weather2.requests.HttpRequest;
 import org.junit.jupiter.api.Test;
 
@@ -17,9 +18,16 @@ public class WeatherTests {
 
     @Test
     public void get_weather_at_lisbon_now() {
-        OpenWeatherWebApi webApi = new OpenWeatherWebApi();
+        OpenWeatherWebApi webApi = new OpenWeatherWebApi(new FileRequest());
         WeatherInfoDto winfo = webApi.weatherAt(LISBON_LAT, LISBON_LONG );
-        System.out.println(winfo);
+        String wiStr = winfo.toString();
+        System.out.println(wiStr);
+    }
+
+    @Test
+    public void save_get_weather_at_lisbon_now() {
+        OpenWeatherWebApi webApi = new OpenWeatherWebApi(new HttpRequest());
+        webApi.saveWeatherAt(LISBON_LAT, LISBON_LONG);
     }
 
     @Test
