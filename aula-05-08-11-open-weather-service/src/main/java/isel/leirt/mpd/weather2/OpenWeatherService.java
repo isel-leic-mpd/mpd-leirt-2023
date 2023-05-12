@@ -47,7 +47,7 @@ public class OpenWeatherService {
 	}
 
 
-	// corrigam e completem os dois métodso abaixo
+	// corrijam e completem os dois métodso abaixo
 	// para terem a mesma semântica lazy do método anterior
 
 	private StreamIterable<DayInfo> forecastAt(Location loc) {
