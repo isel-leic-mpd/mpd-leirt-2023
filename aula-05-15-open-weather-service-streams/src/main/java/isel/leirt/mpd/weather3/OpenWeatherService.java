@@ -1,13 +1,16 @@
-package isel.leirt.mpd.weather2;
+package isel.leirt.mpd.weather3;
 
-import isel.leirt.mpd.weather2.dto.ForecastHourlyDto;
-import isel.leirt.mpd.weather2.dto.ForecastInfoDto;
-import isel.leirt.mpd.weather2.dto.LocationDto;
-import isel.leirt.mpd.weather2.model.DayInfo;
-import isel.leirt.mpd.weather2.model.Location;
-import isel.leirt.mpd.weather2.model.WeatherInfo;
+import isel.leirt.mpd.weather3.dto.ForecastHourlyDto;
+import isel.leirt.mpd.weather3.dto.ForecastInfoDto;
+import isel.leirt.mpd.weather3.dto.LocationDto;
+import isel.leirt.mpd.weather3.model.DayInfo;
+import isel.leirt.mpd.weather3.model.Location;
+import isel.leirt.mpd.weather3.model.WeatherInfo;
 
 import java.time.LocalDate;
+import java.util.function.Supplier;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import isel.mpd.queries.lazy2.StreamIterable;
 
@@ -24,51 +27,41 @@ public class OpenWeatherService {
 
 
 	/**
-	 * Sa~apresentadas duas formas de garantir que
+	 * São apresentadas duas formas de garantir que
 	 * o acesso à api apenas acontece quando for
 	 * consumido o Iterable retornado
 	 *
 	 * @param placeName
 	 * @return
 	 */
-	public StreamIterable<Location> search(String placeName) {
-
-		return   range(1,1)
-				 .flatMap( n -> api.search(placeName))
-				 .map(this::dtoToLocation);
-
-
-		/*
-		return  from( () -> api.search(placeName).iterator())
-					.map(this::dtoToLocation);
-
-		*/
-
+	public Supplier<Stream<Location>> search0(String placeName) {
+ 		return () -> api.search(placeName)
+					  .stream()
+			   		  .map(this::dtoToLocation);
 	}
 
+	Stream<Location> search(String placeName) {
+		return Stream.of(1)
+			.flatMap(__-> api.search(placeName).stream())
+			.map(this::dtoToLocation);
+	}
 
 	// corrijam e completem os dois métodso abaixo
 	// para terem a mesma semântica lazy do método anterior
 
-	private StreamIterable<DayInfo> forecastAt(Location loc) {
-		/*
-		return
-			from(api.forecastWeatherAt(loc.getLatitude(), loc.getLongitude()))
-				.map(dto -> dtoToDayInfo(dto, loc));
-		*/
-
+	private Stream<DayInfo> forecastAt(Location loc) {
 		// TODO
 		return null;
 	}
 
-	private StreamIterable<WeatherInfo> weatherDetail(Double lat,
-											   Double lon,
-											   LocalDate day) {
+	private Stream<WeatherInfo> weatherDetail(Double lat,
+                                                      Double lon,
+                                                      LocalDate day) {
 		// TODO
 		return null;
 	}
 
-	public StreamIterable<WeatherInfo> weatherDetail(Location loc, DayInfo di) {
+	public Stream<WeatherInfo> weatherDetail(Location loc, DayInfo di) {
 		return weatherDetail(loc.getLatitude(), loc.getLongitude(), di.getDate());
 	}
 
@@ -78,7 +71,6 @@ public class OpenWeatherService {
 			dto.getLat(),
 			dto.getLon(),
 			this::forecastAt
-			//l -> forecastAt(l)
 		);
 
 	}
@@ -105,7 +97,8 @@ public class OpenWeatherService {
 			dto.moonRise(),
 			dto.moonSet(),
 			dto.moonPhase(),
-			dto.getDescription()
+			dto.getDescription(),
+			di -> weatherDetail(loc, di)
 		);
 	}
 }
