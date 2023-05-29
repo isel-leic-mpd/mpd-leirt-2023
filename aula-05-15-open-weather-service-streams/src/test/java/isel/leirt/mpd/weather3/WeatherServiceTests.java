@@ -16,7 +16,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-
+/**
+ * Há métodos do serviço para completar
+ * de modo a que os testes passem com sucesso
+ */
 public class WeatherServiceTests {
 
 	@Test
@@ -42,7 +45,7 @@ public class WeatherServiceTests {
 
 		assertEquals(0, count[0]);
 
-		var locations = locationsSupplier.get();
+		var locations = locationsSupplier ;
 		locations.forEach( System.out::println);
 		assertEquals(1, count[0]);
 	}
@@ -56,7 +59,7 @@ public class WeatherServiceTests {
 				new OpenWeatherWebApi( ));
 
 		Stream<DayInfo> forecastWeather =
-				service.search("Lisboa").get()
+				service.search("Lisboa")
 				.filter(l -> l.getCountry().equals("PT"))
 				.flatMap(l -> l.forecast());
 
@@ -79,7 +82,7 @@ public class WeatherServiceTests {
 
 		// TODO
 		List<WeatherInfo> tomorrowTemps =
-				service.search("Lisboa").get()
+				service.search("Lisboa")
 					   .filter(l -> l.getCountry().equals("PT"))
 					   .flatMap(l -> l.forecast())
 					   .filter(di -> di.getDate().equals(LocalDate.now().plusDays(1)))

@@ -18,4 +18,6 @@ include 'aula-04-20-24-lazy-queries'
 include 'aula-05-08-11-open-weather-service'
 include 'aula-05-04-streamIterable' 
 include 'aula-05-15-open-weather-service-streams'
+include 'aula-05-22-spliterators'
+include 'aula-05-29-slipterators-and-functions'
 

@@ -46,7 +46,7 @@ public class OpenWeatherService {
 			.map(this::dtoToLocation);
 	}
 
-	// corrijam e completem os dois métodso abaixo
+	// corrijam e completem os dois métodos abaixo
 	// para terem a mesma semântica lazy do método anterior
 
 	private Stream<DayInfo> forecastAt(Location loc) {
